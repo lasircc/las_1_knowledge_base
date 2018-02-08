@@ -6,4 +6,4 @@ Knowledge Base of LAS 1.0
 
 # About
 
-_~ Tracking basic information to make the life easier_.
+~ _Tracking basic information to make the life easier_.
