@@ -8,7 +8,20 @@ The **Biobank** stores the aliquots information. Physical positions and containe
 Deleting an aliquot
 ###################
 
-An automatic procedure is available at the URL las.ircc./biobank/canc/aliquot. The user has to insert a txt file listing all the genealogyIDs one per line. The procedure sets the the availability attribute equal to 0 in the table Aliquot of the biobank DB. Successively, it sets the endTimestamp in the Aliquot table of the Storage DB. Then, the tube is eliminated if it is set as "single use".
+An automatic procedure is available at the URL cancaliquot_. The user has to insert a txt file listing all the genealogyIDs one per line. The procedure sets the the availability attribute equal to 0 in the table Aliquot of the biobank DB. Successively, it sets the endTimestamp in the Aliquot table of the Storage DB. Then, the tube is eliminated if it is set as "single use".
+.. _cancaliquot: las.ircc./biobank/canc/aliquot
+
+.. note:: Please remember that by default all the created tubes are set to **"single use"**.
+
+Furthermore, users can delete aliquots on their own. Just go to **Aliquots -> Perform -> QC/QA -> Manual Revaluation** and set [DEFINE] to "Exhausted" during the re-evaulation procedure.
+
+
+Aliquot Restore
+###################
+The automatic procedure to carry out the restore is accessible at restorealiquot_. This procedure is nothing but the dual of the above mentioned one for cancellation. At the end of this procedure, the aliquots regain the avaialbility and they become usable again. As for cancellation, the user is asked to provide a txt file with all the genealogyID he/she wants to restore written one per line.
+
+.. _restorealiquot: las.ircc.it/biobank/restore/aliquot
+
 
 
 Changing aliquot pieces
