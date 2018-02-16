@@ -45,7 +45,7 @@ If a sample does not have a number of pieces (for instance if it is a DNA sample
 
 
 Changing patient code in a collection
-#######################
+######################################
 In table ``Collection``, we must edit the *patientCode* field in the relative collection.
 Hence, in the graph modify the attribute *localId* of the *hasAlias* relationship between *Patient* and *Project* nodes. 
 In order to find the *Patient* node, we could query for the informed consensus (labelled as IC). Based on the value of *collectionEvent* attribute, in the table ``Collection`` it is easy yo find the related patient.
@@ -58,11 +58,12 @@ Thus, opening the neo4j shell:
 
 
 Funnel: wrong insertion of a [] in the biobank
-#######################
+##############################################
 In the email reporting the error, the attached JSON file includes all the data to be inserted in the system. For a manual isnertion, it is enough to call the API ``biobank/api/blocks/`` posting the JSON file.
 Below is reported an example of API call:
 
 .. code::
+
 	import json, requests
 	from django.conf import settings
 	gen_dict=[...]
@@ -76,50 +77,65 @@ The vast majority of wrong insertions is due to a missing initial portion of the
 
 
 Modify the creation date of a sample
-#######################
-The attribute ``idSamplingEvent`` in the ``Aliquot`` table points to the table ``SamplingEvent``, whose field ``samplingDate`` needs to be changed.
+####################################
+The attribute *idSamplingEvent* in the ``Aliquot`` table points to the table ``SamplingEvent``, whose field *samplingDate* needs to be changed.
 
 .. code:: sql
+
 	update samplingevent set samplingDate ='<data>' where id=<id>;
 
 Hence, a foreign key references the ``Series`` table, where the series data is stored. Whether the series points to that sampling event only, it is sufficient to change the data directly. Consequently, a new series must be created reporting the new data and pointing to the sampling we are considering.
 
 .. code:: sql
+
 	update serie set serieDate ='<data>' where id=<id>;
 
-Thereafter, in the ``Storage.Aliquot`` table, the ``startTimestamp`` field has to be edited for each aliquot.
+Thereafter, in the ``Storage.Aliquot`` table, the *startTimestamp* field has to be edited for each aliquot.
 
 .. code:: sql
+
 	update aliquot set startTimestamp='<data>' where genealogyID='<genealogy>';
 
-- **If the examined sample is a derivate** (such as DNA or RNA), the initial date of the sampling procedure must be modified as well. To do so, just edit the field ``initialDate`` in the ``aliquotderivationschedule`` as follows.
+- **If the examined sample is a derivate** (such as DNA or RNA)
+    ::
 
-	.. code:: sql
-		update aliquotderivationschedule set initialDate ='<data>' where idAliquot=<id>
+    The initial date of the sampling procedure must be modified as well. To do so, just edit the field *initialDate* in the ``aliquotderivationschedule`` table as follows
+  
 
-	Therefore, the measurement insertion date needs to be changed accordingly in the attribute ``qualityevent``
+    .. code:: sql
 
-	.. code:: sql
-		update qualityevent set misurationDate ='<data>', insertionDate ='<data>' where     idAliquotDerivationSchedule =<id>
+        update aliquotderivationschedule set initialDate ='<data>' where idAliquot=<id>
+    
+        
+    Therefore, the measurement insertion date needs to be changed accordingly in the attribute *qualityevent*
+    
+    .. code:: sql
+    
+        update qualityevent set misurationDate ='<data>', insertionDate ='<data>' where     idAliquotDerivationSchedule =<id>
+    
+    Thereafter the derivation has to be edited accordingly in the *derivationevent* field.
 
-	Thereafter the derivation has to be edited accordingly in the ``derivationevent`` field.
+- **If the sample comes from a mouse explant**
+    ::
 
-- **If the sample comes from a mouse explant**, remember to modify its date of death as reported below.
+    As a first step, remember to modify its date of death as reported below.
 
-	.. code:: sql
-		update phys_mice set death_date ='<data>' where barcode ='<barcode>'
+    .. code:: sql
 
-	Then, look for the explant details and edit the series date accordingly. If the series refers to that mouse only:
+        update phys_mice set death_date ='<data>' where barcode ='<barcode>'
 
-	.. code:: sql
-		update series set date='<data>' where id=<id>
+    Then, look for the explant details and edit the series date accordingly. If the series refers to that mouse only:
 
-	Conversely, if the sample is a cell line and is been archived using the Cell Lines module, the procedure is slightly different. First of all, we edit the ``application_date`` and ``end_date_time`` attributes in tables ``archive_details`` and ``cell_details`` respectively.
+    .. code:: sql
+
+        update series set date='<data>' where id=<id>
+
+    Conversely, if the sample is a cell line and is been archived using the Cell Lines module, the procedure is slightly different. First of all, we edit the *application_date* and *end_date_time* attributes in tables ``archive_details`` and ``cell_details`` respectively.
 
 
 Delete an experiment
-#######################
-An experiment could be handled by an external module, i.e. not by the biobank, but by some other modules such as realTime, Sanger or digitalPCR.
+####################
+An experiment could be handled by an external module, i.e. not by the biobank, but by some other modules such as *realTime*, *Sanger* or *digitalPCR*.
 To completely delete an experiment, we access to the ``Request`` table of the involved module. Then cancel the from table ``Aliquotexperiment`` all those lines in which a sample is related to the experiment we want to eliminate.
 
 .. note::  To find all the samples involved in the experiment, having a look at the experimental notes may save you some time.
