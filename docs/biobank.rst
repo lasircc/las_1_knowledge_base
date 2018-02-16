@@ -18,7 +18,7 @@ An automatic procedure is available at the URL http://las.ircc./biobank/canc/ali
 
 The procedure sets the the availability attribute equal to 0 in the table ``Aliquot`` of the biobank DB. Successively, it sets the endTimestamp in the Aliquot table of the Storage DB. Then, the tube is eliminated if it is set as "single use".
 
-.. note:: Please remember that by default all the created tubes are set to **"single use"**.
+.. note::  Please remember that by default all the created tubes are set to **"single use"**.
 
 Furthermore, users can delete aliquots on their own. Just go to ``Aliquots -> Perform -> QC/QA -> Manual Revaluation`` and set [DEFINE] to *"Exhausted"* during the re-evaulation procedure.
 
@@ -84,34 +84,34 @@ The attribute ``idSamplingEvent`` in the ``Aliquot`` table points to the table `
 
 Hence, a foreign key references the ``Series`` table, where the series data is stored. Whether the series points to that sampling event only, it is sufficient to change the data directly. Consequently, a new series must be created reporting the new data and pointing to the sampling we are considering.
 
-..code:: sql
+.. code:: sql
 	update serie set serieDate ='<data>' where id=<id>;
 
 Thereafter, in the ``Storage.Aliquot`` table, the ``startTimestamp`` field has to be edited for each aliquot.
 
-..code:: sql
+.. code:: sql
 	update aliquot set startTimestamp='<data>' where genealogyID='<genealogy>';
 
 - **If the examined sample is a derivate** (such as DNA or RNA), the initial date of the sampling procedure must be modified as well. To do so, just edit the field ``initialDate`` in the ``aliquotderivationschedule`` as follows.
 
-	..code:: sql
+	.. code:: sql
 		update aliquotderivationschedule set initialDate ='<data>' where idAliquot=<id>
 
 	Therefore, the measurement insertion date needs to be changed accordingly in the attribute ``qualityevent``
 
-	..code:: sql
+	.. code:: sql
 		update qualityevent set misurationDate ='<data>', insertionDate ='<data>' where     idAliquotDerivationSchedule =<id>
 
 	Thereafter the derivation has to be edited accordingly in the ``derivationevent`` field.
 
 - **If the sample comes from a mouse explant**, remember to modify its date of death as reported below.
 
-	..code:: sql
+	.. code:: sql
 		update phys_mice set death_date ='<data>' where barcode ='<barcode>'
 
 	Then, look for the explant details and edit the series date accordingly. If the series refers to that mouse only:
 
-	..code:: sql
+	.. code:: sql
 		update series set date='<data>' where id=<id>
 
 	Conversely, if the sample is a cell line and is been archived using the Cell Lines module, the procedure is slightly different. First of all, we edit the ``application_date`` and ``end_date_time`` attributes in tables ``archive_details`` and ``cell_details`` respectively.
@@ -122,4 +122,4 @@ Delete an experiment
 An experiment could be handled by an external module, i.e. not by the biobank, but by some other modules such as realTime, Sanger or digitalPCR.
 To completely delete an experiment, we access to the ``Request`` table of the involved module. Then cancel the from table ``Aliquotexperiment`` all those lines in which a sample is related to the experiment we want to eliminate.
 
-.. note:: To find all the samples involved in the experiment, having a look at the experimental notes may save you some time.
+.. note::  To find all the samples involved in the experiment, having a look at the experimental notes may save you some time.
