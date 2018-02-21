@@ -16,5 +16,6 @@ Tracking basic information to make the life easier.
    :caption: Contents:
 
    biobank
+   hamilton
    xeno
    general
