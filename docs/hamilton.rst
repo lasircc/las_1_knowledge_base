@@ -33,7 +33,7 @@ Therefore, the sequence of operations to be performed is:
 	1. Choose the quantification protocols to be executed.
 	2. Insert a procedure name (even alphanumeric), to be used as a reference when the real procedure will be executed by the robot.
 	3. Select the container type in which the samples to be derived are stored (those previously placed in the leftmost guide in Step 4).
-	4. Mark as *"Failed"* the unsucessful derivations.
+	4. Mark as *"Failed"* the unsuccessful derivations.
 	5. Set the volume of samples to be derived, i.e. the amount of liquid poured by the extractor.
 	6. Click "Confirm".
 
@@ -51,13 +51,13 @@ This procedure allows to transfer to the LAS system the values of all the quanti
 
 		a. The number of aliquots to be created is preset. If needed, the user can edit this value and then click on "Set aliquots to create" to make the changes effective.
 		b. It is possible to set the concentration value for the left over checking the option "Set left over concentration". This allows to have the same concentrations for all the N aliquots.
-		c. One may avoid to create the spare aliquot by unchecking "Save left over". In such a way N-1 aliquots will be saved and the spare material in the dilution can be discarded.
+		c. One may avoid to create the spare aliquot by un-checking "Save left over". In such a way N-1 aliquots will be saved and the spare material in the dilution can be discarded.
 		d. Set volume and concentration of each son-aliquot.
 		e. Allocate one slot for each son-aliquot (left over included). This is the physical space inside the robot, containing the plate to store the son-aliquots.
 		f. Click on "Apply Values".
-		g. If the allotted material to derive new aliqouts is not sufficient for the inserted values of volume and concentration, the samples rows will turn red. Otherwise the derivation can succeed and the row will appear green. **Be aware that the red lines have to be manually corrected**.
+		g. If the allotted material to derive new aliquots is not sufficient for the inserted values of volume and concentration, the samples rows will turn red. Otherwise the derivation can succeed and the row will appear green. **Be aware that the red lines have to be manually corrected**.
 		h. To edit the affected row just click on it. A box will pop up showing the details of each single son-aliquot to look for. As in general planning, it is possible to change the number of aliquots to be created, set the concentration for the left over or to not save it at all. All the modifications made using this window will affect **only** the associated sample, without changing values for any of the others.
-		i. The red-framed texboxes indicate an error, therefore their value must be modified. After editing the values of volume and concentration, click on "Recalculate Values" to compute values again.
+		i. The red-framed textboxes indicate an error, therefore their value must be modified. After editing the values of volume and concentration, click on "Recalculate Values" to compute values again.
 		j. To confirm changes click "Ok" in the dialog box, otherwise click "Cancel" to discard all manual changes.
 		k. Click on "Submit Data" to confirm all data and terminate the planning of the dilution procedure.
 
@@ -89,7 +89,7 @@ The view shows the planned samples that need to be validated as usual reading th
 
 The steps to be followed are:
 
-	1. Select the quantification protools to be executed.
+	1. Select the quantification protocols to be executed.
 	2. Insert a procedure name (letters and numbers allowed), to be used as a reference when the procedure will be executed by the robot.
 	3. Choose the container type to archive the samples.
 	4. Click "Confirm".
@@ -98,7 +98,7 @@ Now the quantification is planned, so run the robot application to make it effec
 
 **Aliquots-> Perform QC/QA-> Automated revaluation-> Acquire data and save**
 
-This procedeure stores in the LAS system the values of the quantifications made by the Hamilton robot.
+This procedure stores in the LAS system the values of the quantifications made by the Hamilton robot.
 
 In case you applied both fluorescence and UV techniques, two different concentration values appear. Hence, the user must choose the values to be assigned to the sample. 
 
@@ -137,7 +137,7 @@ Here are the steps to follow:
 		c. Allocate one slot for each son-aliquot (left over included). This is the physical space inside the robot, containing the plate to store the new aliquots.
 		d. Click on "Apply Values".
 		e. The "Remaining Volume" column, reports the residual volume in the original instance, after the sampling.
-		f. If the allotted material to derive new aliqouts is not enough for the inserted values of volume and concentration, the samples rows will appear red. Otherwise the derivation can succeed and the row will turn green. **Be aware that the red lines have to be manually corrected**
+		f. If the allotted material to derive new aliquots is not enough for the inserted values of volume and concentration, the samples rows will appear red. Otherwise the derivation can succeed and the row will turn green. **Be aware that the red lines have to be manually corrected**
 		g. To modify the affected row just click on it. A box will pop up showing the details of each single derived aliquot to look for. As in general planning, it is possible to change the number of aliquots to be created. All the modifications made using this window will affect **only** the associated sample, without changing values for any of the others.
 		h. The red-framed cells indicate an error, therefore their value must be modified. After editing the values of volume and concentration, click on "Recalculate Values" to compute values again.
 		i. To confirm changes click "Ok" in the dialog box, otherwise click "Cancel" to discard all manual changes.

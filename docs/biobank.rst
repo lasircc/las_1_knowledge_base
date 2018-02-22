@@ -20,12 +20,12 @@ The procedure sets the the availability attribute equal to 0 in the table ``Aliq
 
 .. note::  Please remember that by default all the created tubes are set to **"single use"**.
 
-Furthermore, users can delete aliquots on their own. Just go to ``Aliquots -> Perform -> QC/QA -> Manual Revaluation`` and set [DEFINE] to *"Exhausted"* during the re-evaulation procedure.
+Furthermore, users can delete aliquots on their own. Just go to ``Aliquots -> Perform -> QC/QA -> Manual Revaluation`` and set [DEFINE] to *"Exhausted"* during the re-evaluation procedure.
 
 
 Aliquot Restore
 ###################
-The automatic procedure to carry out the restore is accessible `here`_. This procedure is nothing but the dual of the above mentioned one for cancellation. At the end of this procedure, the aliquots regain the avaialbility and they become usable again. As for cancellation, the user is asked to provide a txt file with all the genealogyID he/she wants to restore written one per line.
+The automatic procedure to carry out the restore is accessible `here`_. This procedure is nothing but the dual of the above mentioned one for cancellation. At the end of this procedure, the aliquots regain the availability and they become usable again. As for cancellation, the user is asked to provide a txt file with all the genealogyID he/she wants to restore written one per line.
 
 .. _here: http://las.ircc.it/biobank/restore/aliquot
 
@@ -34,7 +34,7 @@ The automatic procedure to carry out the restore is accessible `here`_. This pro
 Changing aliquot pieces
 #######################
 An automatic procedure is available at https://las.ircc.it/biobank/pieces/aliquot. The user must provide a TAB-separated txt file whose lines include the genealogyID and the number of pieces to assign to each sample.
-Therefore, the resulting file sholud look like this: ::
+Therefore, the resulting file should look like this: ::
 
 	<GenealogyID>	<# pieces>
 	<GenealogyID>	<# pieces>
@@ -48,7 +48,7 @@ Changing patient code in a collection
 ######################################
 In table ``Collection``, we must edit the *patientCode* field in the relative collection.
 Hence, in the graph modify the attribute *localId* of the *hasAlias* relationship between *Patient* and *Project* nodes. 
-In order to find the *Patient* node, we could query for the informed consensus (labelled as IC). Based on the value of *collectionEvent* attribute, in the table ``Collection`` it is easy yo find the related patient.
+In order to find the *Patient* node, we could query for the informed consensus (labeled as IC). Based on the value of *collectionEvent* attribute, in the table ``Collection`` it is easy yo find the related patient.
 
 Thus, opening the neo4j shell:
 
@@ -59,7 +59,7 @@ Thus, opening the neo4j shell:
 
 Funnel: wrong insertion of a [] in the biobank
 ##############################################
-In the email reporting the error, the attached JSON file includes all the data to be inserted in the system. For a manual isnertion, it is enough to call the API ``biobank/api/blocks/`` posting the JSON file.
+In the email reporting the error, the attached JSON file includes all the data to be inserted in the system. For a manual insertion, it is enough to call the API ``biobank/api/blocks/`` posting the JSON file.
 Below is reported an example of API call:
 
 .. code::
@@ -148,7 +148,7 @@ Derivation
 ##########
 Derivation has a more complex structure. The main table is ``aliquotderivationschedule``, on which the audit is available. The table is composed by various attributes and foreign keys that are initially set to NULL and successively filled in as the derivation goes on.
 
-The derivation measures are stored in table ``measurementevent`` referencing, among the others, the table ``qualityevent`` (that references ``aliquotderivationschedule``). Once the derivation its terminated in all its 4 steps, the new aliqouts are created and a row is inserted in table ``derivationevent``. Such table referecnes tables ``aliquotderivationschedule`` (to have a ) and ``samplingevent``. While the former allows to keep a constant connection with the procedure, the latter let us know which samples have been created. Such info is easy to be retrieved, since using the sampling event it is enough to load the ``aliqout`` table and look for the samples associated to that *idSamplingEvent*.
+The derivation measures are stored in table ``measurementevent`` referencing, among the others, the table ``qualityevent`` (that references ``aliquotderivationschedule``). Once the derivation its terminated in all its 4 steps, the new aliquots are created and a row is inserted in table ``derivationevent``. Such table references tables ``aliquotderivationschedule`` (to have a ) and ``samplingevent``. While the former allows to keep a constant connection with the procedure, the latter let us know which samples have been created. Such info is easy to be retrieved, since using the sampling event it is enough to load the ``aliqout`` table and look for the samples associated to that *idSamplingEvent*.
 
 
 Slide preparation
@@ -162,13 +162,13 @@ This is a classic planning procedure, requiring the GenealogyID's or barcodes ju
 
 	1. Select protocol and samples for FF and OF to be cut.
 	2. Validate samples reading their barcodes and click "Next Step".
-	3. The value of thickness for each slice is retrieved direclty from the DB. The number of sections of each slide tells you how many slices can be positioned at most on each slide. Each slide usually has one row and multiple columns. This value is fetched from the database in the table ``featureslideprotocol``. The number of section for each block accounts for how many slices are created by each FF or OF block in the current session. At the beginning, this value is set to 0. However you may change it according to your needs. In this case, as soon as you load a slide code, the systems automatically places a number of slices equal to the value you just set.
+	3. The value of thickness for each slice is retrieved directly from the DB. The number of sections of each slide tells you how many slices can be positioned at most on each slide. Each slide usually has one row and multiple columns. This value is fetched from the database in the table ``featureslideprotocol``. The number of section for each block accounts for how many slices are created by each FF or OF block in the current session. At the beginning, this value is set to 0. However you may change it according to your needs. In this case, as soon as you load a slide code, the systems automatically places a number of slices equal to the value you just set.
 	4. Load a slide code. If it is not already registered in the LAS system, it is then created at the end of the current session along with the new aliquots.
 	5. Click on a square inside the slide to place a slice.
 	6. If needed, using the table at the bottom of the page, you can delete the samples you have placed.
 	7. At the time of saving, the system creates a aliquots of type PS (Paraffin Section) if the block is an FF. Differently, if the block is an OF, the created aliquot will be of type OS (OCTSection). In addition, the slide instance is created in the ``Storage`` DB.
 
-The DB table in which the entire procedure is saved is ``aliquotslideschedule``. In table ``slideprotocol``, you can find the protocol used to generate the slices and in ``featureslideprotocol`` the default values of eache protocol are recorded. This last table translates a many-to-many relationship between ``feature`` and ``slideprotocol``.
+The DB table in which the entire procedure is saved is ``aliquotslideschedule``. In table ``slideprotocol``, you can find the protocol used to generate the slices and in ``featureslideprotocol`` the default values of each protocol are recorded. This last table translates a many-to-many relationship between ``feature`` and ``slideprotocol``.
 
 .. note:: The code to generate this views is in ``tissue/slide.py``. The .js files are archived in ``tissue/tissue_media/JS/slide`` and the .html's are in ``tissue/Templates/tissue2/slide``.
 
@@ -182,7 +182,7 @@ In order to execute the procedure, you must firstly set a protocol in ``Aliquots
 There you can insert the name, choose a technique and then define the related marker(s) by clicking on the "Create Marker" button. Be aware that this procedure changes according to the chosen technique:
 
 	- **Histology:** a page opens up with a form in which the user can insert the features of a colorant. Some values are optional, but if you do not insert them now, you will not be able to do so until execution time.
-	- **IF and IHC:** here you have to insert an antibody, specifying features such as the referring gene. The system has already recorded a list of antibodies, thus if you type their name in field "Marker Name", you can pick the right one choosing among the autocomplete results.
+	- **IF and IHC:** here you have to insert an antibody, specifying features such as the referring gene. The system has already recorded a list of antibodies, thus if you type their name in field "Marker Name", you can pick the right one choosing among the auto-complete results.
 	- **FISH, CISH and RNAScope:** this category requires a probe. When you click "Create Marker" you are redirected to the *Annotation* module in which you can insert the probe name and the nucleotide sequence to find the right alignment on the genome.
 
 **Aliquots-> Slides labelling-> Plan**
@@ -192,7 +192,7 @@ This is a canonical planning procedure, but only PS and OS aliquots are accepted
 **Aliquots-> Slides labelling-> Execute**
 
 	1. Validate the samples via barcode reading and click "Next Step".
-	2. In the left-hand side of the screen the slides are displayed, while the right-hand side is aimed to protocol chioce of which, once selected, you will be able to see all parameters. The coloring takes place by clicking on the slide representing the desired aliquot. Thereafter, it changes color. Notice that each protocol has its own random color picked by the system on-the-fly. At the bottom of the page it is possible to delete all the operations form the beginning of the procedure.
+	2. In the left-hand side of the screen the slides are displayed, while the right-hand side is aimed to protocol choice of which, once selected, you will be able to see all parameters. The coloring takes place by clicking on the slide representing the desired aliquot. Thereafter, it changes color. Notice that each protocol has its own random color picked by the system on-the-fly. At the bottom of the page it is possible to delete all the operations form the beginning of the procedure.
 	3. To avoid planning operations you can insert the slide directly and coloring jumping that phase. Just specify the GenealogyID or the slide code in the top-left field.
 	4. At the end of the procedure the aliquot representing the colored slice is discarded and substituted with a new one of type LS.
 
@@ -200,17 +200,17 @@ This is a canonical planning procedure, but only PS and OS aliquots are accepted
 
 This screen shows the list of slides colored in the sessions that are still ongoing. Here you can also insert any file related to a slide that has been processed by the LAS system in the past and whose pictures have been already acquired. It is enough to insert the GenealogyID or the slide code in the top-left field. To consider each file unambiguously, at each file a new name is assigned (editable by the user if needed). this name is made up by the first figures of the GenealogyID, the coloring protocol name and, in closing, by the date.
 
-From now on, the LAS will refer to that particular file using only this newly-created name. Whether the slide does not have any associated pictures, it is enough to checdk the voice "No File" and the insertion procedure terminates.
+From now on, the LAS will refer to that particular file using only this newly-created name. Whether the slide does not have any associated pictures, it is enough to check the voice "No File" and the insertion procedure terminates.
 
 **Aliquots-> Slides labelling-> Files-> View/Download**
 
-In the lef-hand side of the screen, the fields to create a slide are displayed (in the ``GenealogyID`` field you can insert only the first characters of the code). Once clicked "Search File", the slides appear on the right and by clicking on each of them, a windows pops up showing all the related files.
+In the left-hand-hand side of the screen, the fields to create a slide are displayed (in the ``GenealogyID`` field you can insert only the first characters of the code). Once clicked "Search File", the slides appear on the right and by clicking on each of them, a windows pops up showing all the related files.
 
-At this point, selcting one or more pictures one may decide to download them or to see them directly in the screen as a classic gallery.
+At this point, selecting one or more pictures one may decide to download them or to see them directly in the screen as a classic gallery.
 
 **Aliquots-> Slides labelling-> Files-> Delete**
 
-Once found the slide by means of the classic search filters, the related files become visible and the user can decide to deldete one or more of them.
+Once found the slide by means of the classic search filters, the related files become visible and the user can decide to delete one or more of them.
 
 The file itself is not physically deleted: the system just appends its cancellation date and the operator identifier in the table ``labelfile``, containing the linking between the slide and the file. In such a way, that file will not be loaded anymore in the gallery of that slide.
 
@@ -259,11 +259,11 @@ Fingerprinting
 
 This section is still under construction. The code is in the trunk at ``catissue/tissue/fingerPrinting.py``.
 
-In this file is coded the function *"NotAvailable"* that is already in production and allows to associate a list of aliqouts to a certain WG. Therefore, if you want to lock some samples you have to firstly assign them to the QCInspector_WG so that the users cannot see them anymore.
+In this file is coded the function *"NotAvailable"* that is already in production and allows to associate a list of aliquots to a certain WG. Therefore, if you want to lock some samples you have to firstly assign them to the QCInspector_WG so that the users cannot see them anymore.
 
 To reverse this operation (so, to unlock) you have to re-assign to the WG they originally belong to. To do so, insert a file with a list of GenealogyIDs (or initial part of them). Next to each code the user must write *True* or *False*.
 
-	- In case of **True**, the functions retieves all the bioentities (aliquots, mices, cell lines) starting with that GenealogyID. Then in the graph, starting from that nodes it traverses all the tree till the leaves and changes the WG to all.
+	- In case of **True**, the functions retrieves all the bioentities (aliquots, mice, cell lines) starting with that GenealogyID. Then in the graph, starting from that nodes it traverses all the tree till the leaves and changes the WG to all.
 
 	- In case of **False** the procedure affects only the nodes that actually begins with that GenealogyID.
 
@@ -273,7 +273,7 @@ Drawing a main logic, there are two big operational branches: *Change* and *Merg
 	
 **Change:** 
 
-here the user writes on the file the start and destination GenealogyIDs of the parent node to which he/she has to append the root of the sub-tree to be modified. Then, the parent node of this subtreis appended to the node identified as destination by the user, recomputing all the GenealogyIDs for the moved nodes. 
+Here the user writes on the file the start and destination GenealogyIDs of the parent node to which he/she has to append the root of the sub-tree to be modified. Then, the parent node of this subtrees appended to the node identified as destination by the user, recomputing all the GenealogyIDs for the moved nodes. 
 
 Suppose for instance that Source = ``CRC0300LMX0A02004`` and Destination = ``CRC0222PRX0A02001``. The source mouse becomes so the son of the destination one, creating a new mouse-code based on those already registered in the system. 
 
