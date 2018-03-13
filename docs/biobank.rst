@@ -429,3 +429,32 @@ The table is depicted below and it is sufficient to update the ``idGeometry`` fi
 
 
 .. warning::  Beware that in this scenario we are not modifying the content of a plate at all. We are just changing the geometry configuration. Whether it is relatively safe to change in favor of a bigger geometry (i.e. we expand the plate), it is much more critical when the plate is shrunk. For this reason it is useful to perform a sanity check on data and on the content of a plate.
+
+
+Change container name
+*********************
+
+Here we exemplify the name-change procedure using the case in which a user wants to change the name of a rack from **old_barcode** to **new_barcode**. 
+A rack is usually barcoded manually by operators, hence they may require to change their barcodes according to their needs.
+
+To do so go to we use the ``Storage`` database.
+
+.. code:: sql
+
+	mysql> use storage;
+
+Then, we firstly identify the rack, i.e. the container whose barcode matches the one specified by the user. Thereafter, we edit the container barcode with its new name via an update query.
+
+.. code:: sql
+
+	mysql> select * from Container where barcode = 'old_barcode';
+	mysql> update Container set barcode = 'new_barcode' where barcode = 'old_barcode';
+
++--------+-----------------+-------------------+------------+----------+-----------------+--------------+------+-------+---------+--------+
+| id     | idContainerType | idFatherContainer | idGeometry | position | barcode         | availability | full | owner | present | oneUse |
++========+=================+===================+============+==========+=================+==============+======+=======+=========+========+
+| 268241 |              26 |              NULL |         72 |          | **old_barcode** |            1 |    0 | NULL  |       1 |      0 |
++--------+-----------------+-------------------+------------+----------+-----------------+--------------+------+-------+---------+--------+
+
+
+The barcode is unique inside the system. The next operation is to insert the *father container* associated to the containers belonging to the one we just modified. Firstly it is useful to check the status of some of that containers via a simple select query. The ``FatherContainer`` field has to be updated from the NULL value to that of **new_barcode**. 
