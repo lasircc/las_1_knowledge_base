@@ -8,7 +8,7 @@ The **Biobank** stores the aliquots information. Physical positions and containe
 Deleting an aliquot
 ###################
 
-An automatic procedure is available at the URL http://las.ircc./biobank/canc/aliquot. The user has to insert a txt file listing all the genealogyIDs one per line, according to the following format::
+An automatic procedure is available at the URL http://las.ircc.it/biobank/canc/aliquot. The user has to insert a txt file listing all the genealogyIDs one per line, according to the following format::
 
 	<GenealogyID>
 	<GenealogyID>
