@@ -15,7 +15,8 @@ Tracking basic information to make the life easier.
    :maxdepth: 3
    :caption: Contents:
 
+   general
    biobank
    hamilton
    xeno
-   general
+   celllines

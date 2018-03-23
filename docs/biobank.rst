@@ -5,6 +5,8 @@ Biobank & Storage modules
 The **Biobank** stores the aliquots information. Physical positions and container details are managed by the **Storage**.
 
 
+.. _deleting_an_aliquot:
+
 Deleting an aliquot
 ###################
 

@@ -57,7 +57,7 @@ In the biobanca a new record for each aliquot is created in the table ``biobanca
 +--------+------------+----------------------------+-----------------+---------------+--------------+-----------+---------+-------------+
 
 
-The sampling event has a reference to a collection. The collection record is not usually created during the explant session. Therefore, if you need to delete explanted aliquots, **do not delete** the collection. The sampling event has a reference to a serie.
+The sampling event has a reference to a collection. The collection record is not usually created during the explant session. Therefore, if you need to delete explanted aliquots, **do not delete** the collection. The sampling event has a reference to a series.
 
 .. code:: sql
 
@@ -71,7 +71,7 @@ The sampling event has a reference to a collection. The collection record is not
 +-------+--------------+--------------+----------+---------+--------------+
 
 
-The serie...
+The series...
 
 .. code:: sql
 
@@ -142,3 +142,37 @@ Recovering an explanted mouse
 
 ...
 
+Recreate an implant
+*******************
+
+Here we exemplify the implant recovery procedure to restore the implant-related data to a consistent state in the database. The operations we are going to explain here are useful in all those cases in which the save operation has failed for whatever reason.
+First of all, we identify the experimental series the implant belongs to. In detail, there is a one-to-many relationship between a series and their related sampling events.
+
+.. code:: sql
+
+	query to identify the experimental series
+
+Once the experimental series has been identified, we use the ``Storage`` database
+
+.. code:: sql
+	
+	mysql> use storage;
+
+Since the aliquots can be collected in multiple fashions, they must be treated accordingly during this recreation procedure.
+
+	- **FFPE blocks:** delete both the container and the aliquot.
+	- **Tubes:** make them available again (empty them setting attribute *full*=0 in the ``Container`` table) and delete the associated aliquot.
+
+In order to access the containers related to the explants, we use their *GenealogyIDs* in the table ``Container``
+
+.. code:: sql
+	
+	mysql> update Container set full=0 where id in (select idContainer from Aliquot where GenealogyID like 'Gen_ID%');
+
+To delete the FFPE block, we delete its record in the ``Contanier`` table, along with the associated information in the ``ContainerFeature`` table.
+
+.. code:: sql
+
+	mysql> delete from containerfeature where idContainer in (select idContainer from Aliquot where GenealogyID like 'Gen_ID%');
+
+To simply delete an aliquot an automatic procedure is available at the URL http://las.ircc.it/biobank/canc/aliquot. Please refer to  :ref:`deleting_an_aliquot` section.
