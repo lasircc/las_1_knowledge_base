@@ -18,7 +18,7 @@ An automatic procedure is available at the URL http://las.ircc.it/biobank/canc/a
 	....
 	
 
-The procedure sets the the availability attribute equal to 0 in the table ``Aliquot`` of the biobank DB. Successively, it sets the endTimestamp in the Aliquot table of the Storage DB. Then, the tube is eliminated if it is set as "single use".
+The procedure sets the the availability attribute equal to 0 in the table ``Aliquot`` of the Biobank DB. Successively, it sets the endTimestamp in the Aliquot table of the Storage DB. Then, the tube is eliminated if it is set as "single use".
 
 .. note::  Please remember that by default all the created tubes are set to **"single use"**.
 
@@ -168,7 +168,7 @@ This is a classic planning procedure, requiring the GenealogyID's or barcodes ju
 	4. Load a slide code. If it is not already registered in the LAS system, it is then created at the end of the current session along with the new aliquots.
 	5. Click on a square inside the slide to place a slice.
 	6. If needed, using the table at the bottom of the page, you can delete the samples you have placed.
-	7. At the time of saving, the system creates a aliquots of type PS (Paraffin Section) if the block is an FF. Differently, if the block is an OF, the created aliquot will be of type OS (OCTSection). In addition, the slide instance is created in the ``Storage`` DB.
+	7. At the time of saving, the system creates a aliquots of type PS (Paraffin Section) if the block is an FF. Differently, if the block is an OF, the created aliquot will be of type OS (OCTSection). In addition, the slide instance is created in the Storage DB.
 
 The DB table in which the entire procedure is saved is ``aliquotslideschedule``. In table ``slideprotocol``, you can find the protocol used to generate the slices and in ``featureslideprotocol`` the default values of each protocol are recorded. This last table translates a many-to-many relationship between ``feature`` and ``slideprotocol``.
 
@@ -437,7 +437,7 @@ Change container name
 *********************
 
 Here we exemplify the name-change procedure using the case in which a user wants to change the name of a rack from **old_barcode** to **new_barcode**. 
-A rack is usually barcoded manually by operators, hence they may require to change their barcodes according to their needs.
+A rack is usually barcoded manually by operators, hence they may require to change their barcodes according to tattributeheir needs.
 
 To do so go to we use the ``Storage`` database.
 
@@ -460,3 +460,53 @@ Then, we firstly identify the rack, i.e. the container whose barcode matches the
 
 
 The barcode is unique inside the system. The next operation is to insert the *father container* associated to the containers belonging to the one we just modified. Firstly it is useful to check the status of some of that containers via a simple select query. The ``FatherContainer`` field has to be updated from the NULL value to that of **new_barcode**. 
+
+Change archiviation date
+************************
+
+The following operations exemplify a simple data change in the stored samples.
+Suppose to have this scenario, with some imaginary values ad dates and a user asking to correct the archiviation date of the selected samples.
+
++-----------+-------------------+-------------------+------------+------------------+
+| Cell Line | Aliquot           | Sample Barcode    | Wrong Date | Correct Date     |
++===========+===================+===================+============+==================+
+| CL001     | Aliquot_GenID_1   | Barcode_1         | 09/05/2018 | 24/04/2018       | 
++-----------+-------------------+-------------------+------------+------------------+
+| CL002     | Aliquot_GenID_2   | Barcode_2         | 09/05/2018 | 24/04/2018       | 
++-----------+-------------------+-------------------+------------+------------------+
+
+Such changes require to act on three databases: ``Cells``, ``Storage`` and ``Biobanca``.
+The first updates are on ``Cells``.
+
+.. code:: sql
+
+	mysql> use cells;
+
+
+The dates we are about to modify are located under the attribute *application_date* of table ``archive_details``. In order to inspect them it is enough to issue a nested query on the *id* attribute, referenced by *archive_details_id* of table ``Aliquots``.
+
+.. code:: sql
+
+	mysql> select * from archive_details where id in (select archive_details_id from aliquots where gen_id in ('Aliquot_GenID_1','Aliquot_GenID_2'));
+
++------+------------------------+-----------+--------+-------------------------+
+| id   | experiment_in_vitro_id | events_id | amount | application_date        |
++======+========================+===========+========+=========================+
+| 8801 |                   NULL |     99927 |      9 | **2018-05-09 13:37:42** |
++------+------------------------+-----------+--------+-------------------------+
+| 8802 |                   NULL |     99925 |      9 | **2018-05-09 13:37:42** |
++------+------------------------+-----------+--------+-------------------------+
+
+Then we run an update querry correcting the wrong application dates. Remember to be coherent with the specified format, inserting a well-formed data (i.e. providing the application hour after the date).
+
+.. code:: sql
+
+	mysql> update archive_details set application_date='2018-04-24 13:37:42' where id in (select archive_details_id from aliquots where gen_id in ('Aliquot_GenID_1','Aliquot_GenID_2'));
+
+
+Therefore, we have to inspect the ``Storage`` db to correct another timestamp associated to our aliquots.
+
+Recreate Experimental Series
+****************************
+
+This paragraph deals with the possibility of a wrong (or partial) writing in the Biobank DB. In the scenario covered here we assume that both the aliquots and the data related to the mouse are missing. Conversely, for the sake of simplicity, we assume that the Storage DB side of such data actually exists.

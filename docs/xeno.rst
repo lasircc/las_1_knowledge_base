@@ -175,4 +175,4 @@ To delete the FFPE block, we delete its record in the ``Contanier`` table, along
 
 	mysql> delete from containerfeature where idContainer in (select idContainer from Aliquot where GenealogyID like 'Gen_ID%');
 
-To simply delete an aliquot an automatic procedure is available at the URL http://las.ircc.it/biobank/canc/aliquot. Please refer to  :ref:`deleting_an_aliquot` section.
+To simply delete an aliquot an automatic procedure is available at the URL http://las.ircc.it/biobank/canc/aliquot. Please refer to section :ref:`deleting_an_aliquot`.
