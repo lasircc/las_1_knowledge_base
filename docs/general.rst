@@ -2,12 +2,9 @@
 General Information
 *******************
 
-General concepts of the LAS.
+General concepts of the LAS and the most common issues.
 
+Work in progress...
 
-Genealogy ID
-############
-
-.. note:: this is a note
 
 ...

@@ -145,9 +145,11 @@ Recreate an implant
 Here we exemplify the implant recovery procedure to restore the implant-related data to a consistent state in the database. The operations we are going to explain here are useful in all those cases in which the save operation has failed for whatever reason.
 First of all, we identify the experimental series the implant belongs to. In detail, there is a one-to-many relationship between a series and their related sampling events.
 
+Supposing to investigate the experimental series related to the mouse barcodes B1, B2 and B3 respectively, we could run the following query.
+
 .. code:: sql
 
-	query to identify the experimental series
+	mysql> select * from serie where id in (select idSerie from samplingevent where id in (select idSamplingEvent from aliquot where uniqueGenealogyID in ('B1','B2','B3')));
 
 Once the experimental series has been identified, we use the ``Storage`` database
 
