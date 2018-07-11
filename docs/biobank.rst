@@ -59,8 +59,8 @@ Thus, opening the neo4j shell:
 	match (n:IC)<-[r:signed]-(p:Patient)-[g:hasAlias]->(h:Project) where n.icCode='<consenso>' set g.localid='<codice_paziente>' return g
 
 
-Funnel: wrong insertion of a [] in the biobank
-##############################################
+Funnel: wrong insertion of a block in the biobank
+#################################################
 In the email reporting the error, the attached JSON file includes all the data to be inserted in the system. For a manual insertion, it is enough to call the API ``biobank/api/blocks/`` posting the JSON file.
 Below is reported an example of API call:
 
@@ -75,7 +75,7 @@ Below is reported an example of API call:
 	r=requests.post(url, data=values_to_send, verify=False, headers={'Content-type': 'application/json'})
 	status=r.status_code
 
-The vast majority of wrong insertions is due to a missing initial portion of the [] barcode. More precisely, we are referring to the first two letters, specifying the hospital where the samples have been collected. Of course the barcode needs to be complete when sent to the API.
+The vast majority of wrong insertions is due to a missing initial portion of the block barcode. More precisely, we are referring to the first two letters, specifying the hospital where the samples have been collected. Of course the barcode needs to be complete when sent to the API.
 
 
 Modify the creation date of a sample
