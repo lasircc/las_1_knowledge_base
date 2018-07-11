@@ -2,7 +2,8 @@
 The Xenografts module
 *********************
 
-The *Xenografts module* is responsible for all the operations related to Xeno experiments. Blah Blah Blah...
+The *Xenografts module* is responsible for all the operations related to Xeno experiments. Each aliquot implantation defines a biological entity named Biomouse. Since multiple tumor aliquots may be implanted at different sites within the same animal, the physical animal can host several Biomice. Biomice can be grouped into Experimental
+Groups according to the purpose of the research. In this way, researchers can study tumor growth and treatment response on a subset of animals. The physical animals can assume different statuses which affect the life cycle of the hosted Biomice.
 
 
 
@@ -137,10 +138,6 @@ You can load other aliquots in the following way:
 - Select ``Add aliquots to explant``
 - Load the file with new aliquots. Click on ``Template`` to get the required format.
 
-Recovering an explanted mouse
-*****************************
-
-...
 
 Recreate an implant
 *******************
