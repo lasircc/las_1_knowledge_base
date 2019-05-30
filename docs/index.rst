@@ -17,6 +17,7 @@ Tracking basic information to make the life easier.
 
    general
    biobank
+   storage
    hamilton
    xeno
    celllines
