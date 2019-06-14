@@ -25,6 +25,7 @@ For example, a plate may directly contain some biological entities (rather than 
 
 For every container type a series of mutual interactions (i.e., which container type can host another one) has been defined, which can vary according to characteristics such as the layout or the laboratory procedure. For instance, a plate of a given manufacture and model may be able to host only some kind of tubes.
 For every container type, several container instances exist, univocally identified by a barcode.
+
 Every container has a geometry, defined by the number of its rows and columns. The geometry is used to visually render the container in the user interfaces. Furthermore every container can contain one or more types of biological entities (e.g. viable, RNA later, snap-frozen), which are tracked by the system.
 
 Common operations for the help desk
@@ -123,6 +124,114 @@ Now it is just a matter of swapping the tubes positions (by means of a ``Genealo
 
 In case of a plate change, just go to table ``Container`` update the ``idFatherContainer`` as well.
 
+
+Delete a tube
+*************
+This help desk case deals with the database operations to reflect the physical elimination of a container (a tube in this example) and its content.
+Suppose that we want to delete tube whose barcode is 'P00001'.
+
+As a preliminary operation we need to identify the tube content and make it unavailable to users. We do so interacting with both ``Storage`` and ``Biobank`` database:
+
+.. code:: sql
+
+	mysql> use storage;
+	mysql> select * from biobanca.aliquot where uniqueGenealogyID in (select genealogyID from aliquot where idContainer in (select id from container where barcode='P00001'));
+
++--------+-----------+----------------------------+-----------------+---------------+--------------+-----------+---------+-------------+
+| id     | barcodeID | uniqueGenealogyID          | idSamplingEvent | idAliquotType | availability | timesUsed | derived | archiveDate |
++========+===========+============================+=================+===============+==============+===========+=========+=============+
+| 155199 | P00001    | GBCNNDQBLH0000000000VT0100 |           00001 |             1 |            1 |         0 |       0 | 2019-06-05  |
++--------+-----------+----------------------------+-----------------+---------------+--------------+-----------+---------+-------------+
+
+.. code:: sql
+
+	mysql> update biobanca.aliquot set availability=0 where uniqueGenealogyID='GBCNNDQBLH0000000000VT0100';
+
+Now it's time to delete the tube itself and to do so we exploit the containerID and barcode from the container table. 
+We run the following query in this specified order to not violate any key constraint.
+
+.. code:: sql
+
+	mysql> delete from containerfeature where idContainer in (select id from container where barcode='P00001');
+	mysql> delete from aliquot where idContainer in (select id from container where barcode='P00001');
+	mysql> delete from container where barcode='P00001';
+
+From now on, there is no more evidence of any container, since there is no aliquot or container in the Storage database but the aliquot is still alive in the graph. We have to clean after ourself in both graph and ``Biobank`` database.
+We need to delete the relation between the aliquot and its WG, and the aliquot features from the ``aliquotfeature`` table. Only after these two operations we can delete the physical aliquot.
+
+.. code:: sql
+
+	mysql> use biobanca;
+	mysql> delete from aliquot_wg where id_aliquot in (select id from aliquot where barcodeID='P00001');
+	mysql> delete from aliquotfeature where idAliquot in (select id from aliquot where barcodeID='P00001');
+	mysql> delete from aliquot where barcodeID='P00001';
+
+On graph we delete the aliquot running the following query:
+
+.. code:: cypher
+
+	match (n:Aliquot {identifier: 'CRCNNDQBLH0000000000VT0100'}) detach delete n
+
+Plate compatibility problems
+****************************
+At the moment of container creation, for every new instance the user must specify the type of biological content that this container will be allowed to contain.
+It may happen sometimes, that users needs to modify such list afterwards when they move aliquots from a container to another.
+
+There is a dedicated functionality to accomplish this task called "Change container features" available at /storage/plate/change/. In some cases anyhow, the user cannot act directly on the biological content types. That usually happens when some of the father containers does not allow a certain type of content by default (i.e. at the moment of creation). For this reason, a database update is required.
+
+Let's see the example of making plate Plate01 compatibile with rack Rack99
+
+Opening the mysql shell use the ``Storage`` database.
+
+.. code:: sql
+
+	mysql> use storage;
+
+First of all identify the plate within the container table.
+
+.. code:: sql
+
+	mysql> select * from container where barcode='Plate01';
+
++--------+-----------------+-------------------+------------+----------+------------+--------------+------+-------+---------+--------+
+| id     | idContainerType | idFatherContainer | idGeometry | position | barcode    | availability | full | owner | present | oneUse |
++========+=================+===================+============+==========+============+==============+======+=======+=========+========+
+| 260128 |              16 |              NULL |         13 |          |   Plate01  |            1 |    1 | NULL  |       1 |      0 |
++--------+-----------------+-------------------+------------+----------+------------+--------------+------+-------+---------+--------+
+
+We can see that ``idContainerType``=16, and querying the table ``genericcontainertype`` we should see its generic container type.
+
+.. code:: sql
+
+	mysql> select * from genericcontainertype where id in (select idGenericContainerType from containertype where id=16);
+
++----+-----------+--------------+
+| id | name      | abbreviation |
++====+===========+==============+
+|  3 | Plate/Box | plate        |
++----+-----------+--------------+
+
+Now that we have confirmation of the container type, we can go on checking the content type of both container (the plate) and its father container (the rack i this case).
+
+.. code:: sql
+
+	mysql> select value from containerfeature where idContainer in (select id from container where barcode='Plate01') and value not in (select value from containerfeature where idContainer in (select * from container where barcode='Rack99'));
+
++-------+
+| value |
++=======+
+| FR    |
+| FS    |
++-------+
+
+So there are two content types (Frozen and Frozen Sediment) that can be contained by the plate, but not by its father container.
+To overcome this problem, we perform an insert into the containerfeature table, remembering the father contaienr ID.
+
+.. code:: sql
+
+	mysql> insert into containerfeature (idFeature,idContainer,value) values (1,ID_Rack99,'FR'),(1,ID_Rack99,'FF');
+
+In case the previous query would return an empty set (i.e. both container and its father can contain the same types), there is another table we should check.
 
 Modify plate geometry
 *********************
