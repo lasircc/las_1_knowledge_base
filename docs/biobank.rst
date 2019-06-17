@@ -22,7 +22,7 @@ The procedure sets the the availability attribute equal to 0 in the table ``Aliq
 
 .. note::  Please remember that by default all the created tubes are set to **"single use"**.
 
-Furthermore, users can delete aliquots on their own. Just go to ``Aliquots -> Perform -> QC/QA -> Manual Revaluation`` and set [DEFINE] to *"Exhausted"* during the re-evaluation procedure.
+Furthermore, users can delete aliquots on their own. Just go to ``Aliquots => Perform -> QC/QA -> Manual Revaluation`` and set [DEFINE] to *"Exhausted"* during the re-evaluation procedure.
 
 
 Aliquot Restore
@@ -262,41 +262,51 @@ The view in ``Experiments-> View results-> Other`` allows to retrieve informatio
 	The .js files are in ``tissue/tissue_media/JS/decrease`, while the .html's are in ``tissue/Templates/tissue2/update``.
 
 
-Fingerprinting
-##############
-
-This section is still under construction. The code is in the trunk at ``catissue/tissue/fingerPrinting.py``.
-
-In this file is coded the function *"NotAvailable"* that is already in production and allows to associate a list of aliquots to a certain WG. Therefore, if you want to lock some samples you have to firstly assign them to the QCInspector_WG so that the users cannot see them anymore.
-
-To reverse this operation (so, to unlock) you have to re-assign to the WG they originally belong to. To do so, insert a file with a list of GenealogyIDs (or initial part of them). Next to each code the user must write *True* or *False*.
-
-	- In case of **True**, the functions retrieves all the bioentities (aliquots, mice, cell lines) starting with that GenealogyID. Then in the graph, starting from that nodes it traverses all the tree till the leaves and changes the WG to all.
-
-	- In case of **False** the procedure affects only the nodes that actually begins with that GenealogyID.
-
-The function to correct data based on the results of FP is still under development and is named *"CorrectAliquot"*. An example of file to be inserted in this view is ``catissue/tissue/tissue_media/File_Format/Correct_aliquot.txt.``
-
-Drawing a main logic, there are two big operational branches: *Change* and *Merge*.
-	
-**Change:** 
-
-Here the user writes on the file the start and destination GenealogyIDs of the parent node to which he/she has to append the root of the sub-tree to be modified. Then, the parent node of this subtrees appended to the node identified as destination by the user, recomputing all the GenealogyIDs for the moved nodes. 
-
-Suppose for instance that Source = ``CRC0300LMX0A02004`` and Destination = ``CRC0222PRX0A02001``. The source mouse becomes so the son of the destination one, creating a new mouse-code based on those already registered in the system. 
-
-For example, mouse ``CRC0300LMX0A02004`` may become ``CRC0300LMX0A03003`` because mice ``...001`` and ``...002`` already exists. 
-
-This is effectively a new mouse creation, but all the procedure seen so far can take place only if in the LAS is already present a vital aliquot to act as father for the new implant. Hence, it must exist an aliquot like ``CRC0222PRX0A02001TUMVT``. Another possibility is to have as source ``CRC0400LMX0A02`` and so take all the mice of step 2 [??]and make them sons of the ``CRC0560PRX0A02003``. Hence, for each source-mouse a new mouse-code will be created associated with a GenealogyID like ``CRC0560PRX0A0300Y`` where *Y* is a progressive number incrementing for every created mouse.
-
-
 Common operations for the help desk
 ###################################
 
 Here is a collection of some of the most representative requests received by the LAS Help Desk.
 
+Kit modifications
+*****************
 
-Recreate Experimental Series
-****************************
+It may happen sometimes to run into a wrong kit insertion during the DNA extraction procedure.
+Suppose that here we want to change the kit from "Kit_1" to "Kit_2". to do so, we select the``Biobank`` database and we identify the kits.
 
-This paragraph deals with the possibility of a wrong (or partial) writing in the Biobank DB. In the scenario covered here we assume that both the aliquots and the data related to the mouse are missing. Conversely, for the sake of simplicity, we assume that the Storage DB side of such data actually exists.
+.. code:: sql
+
+	mysql> use biobanca;
+	mysql> select id, idKitType, name from derivationprotocol;
+
++----+-----------+-------------------------------------+
+| id | idKitType | name                                |
++====+===========+=====================================+
+|  1 |         1 | Kit_1					           |
+|  2 |         3 | DNA extraction (ABC)                |
+|  3 |         2 | RNA extraction (DEF)                |
+|  4 |         4 | Kit_2                               |
+|  5 |         5 | cDNA FF                             |
++----+-----------+-------------------------------------+
+
+We now look for the derivations made by the user who asked for a kit change. We can query for all the derivations made by this user in the specified day, bearing in mind the ``idDerivationProtocol`` of the current kit (Kit_1) from the table above.
+
+.. code:: sql
+
+	mysql> select id, idAliquot, idDerivationSchedule, idDerivedAliquotType, idDerivationProtocol, idKit, operator, initialDate, validationTimestamp from aliquotderivationschedule where operator='username' and initialDate='2019-06-10' and idDerivationProtocol=1;
+
++-------+-----------+----------------------+----------------------+----------------------+-------+---------------+-------------+---------------------+
+| id    | idAliquot | idDerivationSchedule | idDerivedAliquotType | idDerivationProtocol | idKit | operator      | initialDate | validationTimestamp |
++=======+===========+======================+======================+======================+=======+===============+=============+=====================+
+| 25786 |    321105 |                 2684 |                    7 |                **1** |    31 |  **username** | 2019-06-10  | 2019-06-10 10:40:00 |
+| 25787 |    323913 |                 2684 |                    7 |                **1** |    31 |  **username** | 2019-06-10  | 2019-06-10 10:40:01 |
+| 25788 |    322091 |                 2684 |                    7 |                **1** |    31 |  **username** | 2019-06-10  | 2019-06-10 10:40:02 |
+| 25789 |    322056 |                 2684 |                    7 |                **1** |    31 |  **username** | 2019-06-10  | 2019-06-10 10:40:03 |
+| 25790 |    322050 |                 2684 |                    7 |                **1** |    31 |  **username** | 2019-06-10  | 2019-06-10 10:40:04 |
+| 25791 |    318828 |                 2684 |                    7 |                **1** |    31 |  **username** | 2019-06-10  | 2019-06-10 10:40:05 |
++-------+-----------+----------------------+----------------------+----------------------+-------+---------------+-------------+---------------------+
+
+Now we can safely update the ``aliquotderivationschedule`` table inserting the new kit.
+
+.. code:: sql
+
+	mysql> update aliquotderivationschedule set idDerivationProtocol=2 where operator='username' and initialDate='2019-06-10' and idDerivationProtocol=1;

@@ -137,11 +137,11 @@ As a preliminary operation we need to identify the tube content and make it unav
 	mysql> use storage;
 	mysql> select * from biobanca.aliquot where uniqueGenealogyID in (select genealogyID from aliquot where idContainer in (select id from container where barcode='P00001'));
 
-+--------+-----------+----------------------------+-----------------+---------------+--------------+-----------+---------+-------------+
-| id     | barcodeID | uniqueGenealogyID          | idSamplingEvent | idAliquotType | availability | timesUsed | derived | archiveDate |
-+========+===========+============================+=================+===============+==============+===========+=========+=============+
-| 155199 | P00001    | GBCNNDQBLH0000000000VT0100 |           00001 |             1 |            1 |         0 |       0 | 2019-06-05  |
-+--------+-----------+----------------------------+-----------------+---------------+--------------+-----------+---------+-------------+
++--------+---------------+----------------------------+-----------------+---------------+--------------+-----------+---------+-------------+
+| id     | barcodeID     | uniqueGenealogyID          | idSamplingEvent | idAliquotType | availability | timesUsed | derived | archiveDate |
++========+===============+============================+=================+===============+==============+===========+=========+=============+
+| 155199 | **P00001**    | GBCNNDQBLH0000000000VT0100 |           00001 |             1 |            1 |         0 |       0 | 2019-06-10  |
++--------+---------------+----------------------------+-----------------+---------------+--------------+-----------+---------+-------------+
 
 .. code:: sql
 
